@@ -28,12 +28,10 @@ def load_data():
     data_dict = {}
 
     for row in records:
-        key = (str(row["Latitude"]).strip(), str(row["Longitude"]).strip())  # Ensure string keys
+        key = (str(row["Latitude"]), str(row["Longitude"]))
         data_dict[key] = row  # Store row as value
 
-    print("Loaded data keys:", list(data_dict.keys())[:10])  # Debugging output
     return data_dict
-
 
 # Load data once (this will make lookups very fast)
 data_cache = load_data()
