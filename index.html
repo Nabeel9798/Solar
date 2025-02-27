@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Data Lookup</title>
+    <script>
+        function fetchData() {
+            let lat = document.getElementById("latitude").value;
+            let lon = document.getElementById("longitude").value;
+
+            fetch(`http://127.0.0.1:5000/get_data?lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+    </script>
+</head>
+<body>
+    <h2>Enter Latitude and Longitude</h2>
+    <input type="text" id="latitude" placeholder="Enter Latitude">
+    <input type="text" id="longitude" placeholder="Enter Longitude">
+    <button onclick="fetchData()">Get Data</button>
+    <pre id="result"></pre>
+</body>
+</html>
