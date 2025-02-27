@@ -128,7 +128,7 @@
       var map = L.map('map', {
     center: [0, 0], // Center at the equator
     zoom: 10, // Adjust zoom level as needed 
-    maxZoom: 20,
+    maxZoom: 19,
     maxBounds: [
         [-90, -180], // Southwest corner
         [90, 180]    // Northeast corner
@@ -146,7 +146,7 @@ map.setMaxBounds(map.options.maxBounds);
         // Set up high-resolution aerial tiles (Esri Satellite)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles © Esri',
-            maxZoom: 20
+            maxZoom: 19
         }).addTo(map);
         
         var currentMarker = null;
