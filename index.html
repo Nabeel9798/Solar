@@ -134,7 +134,8 @@
     wheelPxPerZoomLevel: 100,
     worldCopyJump: false,  // Prevents wrapping
     maxBounds: [[-85, -180], [85, 180]],  // Limits panning to valid lat/lon range
-    maxBoundsViscosity: 1.0  // Keeps users within bounds
+    maxBoundsViscosity: 1.0,  // Keeps users within bounds
+            noWrap: true
 });
 
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
