@@ -125,14 +125,18 @@
     </div>
 
     <script>
-        var map = L.map('map', {
-            center: [52.5200, 13.4050], 
-            zoom: 10, 
-            maxZoom: 20,
-            zoomSnap: 0.25,
-            zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 100
-        });
+       var map = L.map('map', {
+    center: [52.5200, 13.4050],
+    zoom: 3,
+    maxBounds: [
+        [85, -180],  // North-West limit
+        [-85, 180]   // South-East limit
+    ],
+    maxBoundsViscosity: 1.0, 
+    worldCopyJump: false,  
+    wrapX: false   // Prevents longitude from wrapping beyond -180 to 180
+});
+
 
         // Set up high-resolution aerial tiles (Esri Satellite)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
