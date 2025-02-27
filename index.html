@@ -127,11 +127,13 @@
     <script>
       var map = L.map('map', {
     center: [0, 0], // Center at the equator
-    zoom: 2, // Adjust zoom level as needed
+    zoom: 10, // Adjust zoom level as needed 
+    maxZoom: 20,
     maxBounds: [
         [-85, -180], // Southwest corner
         [85, 180]    // Northeast corner
     ],
+    wheelPxPerZoomLevel: 100
     maxBoundsViscosity: 1.0, // Prevents dragging beyond bounds
     worldCopyJump: false,  // Prevents infinite world wrapping
     zoomControl: true, // Enable zoom controls
