@@ -137,6 +137,13 @@
     maxBoundsViscosity: 1.0
 });
 
+        map.on('zoomend', function () {
+    if (map.getZoom() === map.getMinZoom()) {
+        map.setMaxBounds(map.getBounds());  // Locks the map at the current view
+    } else {
+        map.setMaxBounds([[ -90, -180 ], [ 90, 180 ]]);  // Allows normal movement
+    }
+});
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles © Esri',
