@@ -3,26 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets Data Lookup</title>
-    <script>
-        function fetchData() {
-            let lat = document.getElementById("latitude").value;
-            let lon = document.getElementById("longitude").value;
-
-            fetch(`http://127.0.0.1:5000/get_data?lat=${lat}&lon=${lon}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("result").innerText = JSON.stringify(data, null, 2);
-                })
-                .catch(error => console.error("Error fetching data:", error));
+    <title>Solar Yield Data</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            height: 100vh;
         }
-    </script>
+        #sidebar {
+            width: 300px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-right: 2px solid #ddd;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            flex-grow: 1;
+            position: relative;
+        }
+        .north-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 60px;
+            font-weight: bold;
+            color: red;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .search-container {
+            background: #ADD8E6;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+        }
+        #addressInput {
+            padding: 8px;
+            width: calc(100% - 20px);
+            margin-bottom: 5px;
+            display: block;
+        }
+        #searchButton {
+            padding: 8px;
+            width: calc(100% - 20px);
+            display: block;
+            margin: 0 auto;
+        }
+        .table-container {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-container th, .table-container td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .table-container th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .suggestion-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: #f0f8ff;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            text-align: left;
+        }
+        .suggestion-item:hover {
+            background: #d0e8ff;
+        }
+    </style>
 </head>
 <body>
-    <h2>Enter Latitude and Longitude</h2>
-    <input type="text" id="latitude" placeholder="Enter Latitude">
-    <input type="text" id="longitude" placeholder="Enter Longitude">
-    <button onclick="fetchData()">Get Data</button>
-    <pre id="result"></pre>
+    <div id="sidebar">
+        <h2>Solar Yield Data</h2>
+        <div class="search-container">
+            <input type="text" id="addressInput" placeholder="Enter address or coordinates" oninput="getSuggestions()">
+            <div id="suggestions"></div>
+            <button id="searchButton" onclick="searchLocation()">SEARCH</button>
+        </div>
+        
+        <table class="table-container">
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Unit</th>
+            </tr>
+            <tr>
+                <td>DNI</td>
+                <td id="dni">-</td>
+                <td>kWh/m² per day</td>
+            </tr>
+            <tr>
+                <td>GHI</td>
+                <td id="ghi">-</td>
+                <td>kWh/m² per day</td>
+            </tr>
+            <tr>
+                <td>DIF</td>
+                <td id="dif">-</td>
+                <td>kWh/m² per day</td>
+            </tr>
+            <tr>
+                <td>TEMP</td>
+                <td id="temp">-</td>
+                <td>°C</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="map">
+        <div class="north-icon">&#x2B99;</div> 
+    </div>
+
+    <script>
+        var map = L.map('map', {
+            center: [52.5200, 13.4050], 
+            zoom: 10, 
+            maxZoom: 20,
+            zoomSnap: 0.25,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 100
+        });
+
+        // Set up high-resolution aerial tiles (Esri Satellite)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri',
+            maxZoom: 20
+        }).addTo(map);
+
+        var currentMarker = null;
+        const API_URL = "https://solar-production-88e3.up.railway.app//get_solar_data";  // Update this URL when deployed
+
+        function fetchSolarData(lat, lon) {
+            fetch(`${API_URL}?lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('dni').textContent = parseFloat(data.DNI).toFixed(3) || "0.000";
+                    document.getElementById('ghi').textContent = parseFloat(data.GHI).toFixed(3) || "0.000";
+                    document.getElementById('dif').textContent = parseFloat(data.DIF).toFixed(3) || "0.000";
+                    document.getElementById('temp').textContent = parseFloat(data.TEMP).toFixed(3) || "0.000";
+                })
+                .catch(error => alert("Failed to get solar data"));
+        }
+
+        function updateMarker(lat, lon) {
+            if (currentMarker) {
+                map.removeLayer(currentMarker);
+            }
+            currentMarker = L.marker([lat, lon]).addTo(map)
+                .bindPopup(`Lat: ${lat}, Lon: ${lon}`)
+                .openPopup();
+
+            map.setView([lat, lon], 18);
+            fetchSolarData(lat, lon);
+        }
+
+        function searchLocation() {
+            var input = document.getElementById("addressInput").value;
+            if (!isNaN(input.split(',')[0]) && !isNaN(input.split(',')[1])) {
+                var coords = input.split(',');
+                updateMarker(parseFloat(coords[0]), parseFloat(coords[1]));
+            } else {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${input}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            var lat = data[0].lat;
+                            var lon = data[0].lon;
+                            updateMarker(lat, lon);
+                        } else {
+                            alert("Location not found");
+                        }
+                    })
+                    .catch(error => alert("Failed to fetch location"));
+            }
+        }
+
+        function getSuggestions() {
+            var input = document.getElementById("addressInput").value;
+            var suggestionsBox = document.getElementById("suggestions");
+
+            if (input.length < 3) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${input}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            var suggestionItem = document.createElement("div");
+                            suggestionItem.classList.add("suggestion-item");
+                            suggestionItem.textContent = item.display_name;
+                            suggestionItem.onclick = function () {
+                                document.getElementById("addressInput").value = item.display_name;
+                                suggestionsBox.style.display = "none";
+                                updateMarker(item.lat, item.lon);
+                            };
+                            suggestionsBox.appendChild(suggestionItem);
+                        });
+                        suggestionsBox.style.display = "block";
+                    } else {
+                        suggestionsBox.style.display = "none";
+                    }
+                })
+                .catch(error => console.log("Suggestion fetch error", error));
+        }
+
+        map.on('click', function(e) {
+            updateMarker(e.latlng.lat.toFixed(5), e.latlng.lng.toFixed(5));
+        });
+    </script>
 </body>
 </html>
