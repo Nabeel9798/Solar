@@ -143,11 +143,14 @@ map.setMinZoom(2); // Adjust min zoom level if needed
 map.setMaxBounds(map.options.maxBounds);
 
 
-         // Set up high-resolution aerial tiles (Esri Satellite)
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles © Esri',
-            maxZoom: 19
-        }).addTo(map);
+            // Google Satellite Layer
+    var googleSat = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Maps',
+        maxZoom: 21
+    });
+
+    googleSat.addTo(map);
+
 
         
         var currentMarker = null;
