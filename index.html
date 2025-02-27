@@ -137,11 +137,9 @@
             maxBoundsViscosity: 1.0
         });
 
-        // Set up high-resolution aerial tiles (Esri Satellite)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles © Esri',
             maxZoom: 20
-            noWrap: true
         }).addTo(map);
 
         var currentMarker = null;
