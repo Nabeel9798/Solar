@@ -126,16 +126,17 @@
 
     <script>
         var map = L.map('map', {
-            center: [52.5200, 13.4050], 
-            zoom: 10, 
-            maxZoom: 20,
-            zoomSnap: 0.25,
-            zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 100,
-            worldCopyJump: false,
-            maxBounds: [[-90, -180], [90, 180]],
-            maxBoundsViscosity: 1.0
-        });
+    center: [52.5200, 13.4050], 
+    zoom: 10, 
+    maxZoom: 20,
+    zoomSnap: 0.25,
+    zoomDelta: 0.5,
+    wheelPxPerZoomLevel: 100,  // <--- Add a comma here if missing
+    worldCopyJump: false,  // <--- This was likely causing the error
+    maxBounds: [[-90, -180], [90, 180]],
+    maxBoundsViscosity: 1.0
+});
+
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles © Esri',
