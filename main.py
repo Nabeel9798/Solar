@@ -1,3 +1,5 @@
+import os
+import json
 from flask import Flask, jsonify, request
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -5,9 +7,14 @@ import time
 
 app = Flask(__name__)
 
-# Google Sheets Authentication
+# Google Sheets Authentication using Environment Variable
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+
+# Load Google Credentials from Environment Variable
+google_creds = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+
+# Authorize using loaded credentials
+creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds, scope)
 client = gspread.authorize(creds)
 
 # Open Google Sheet
