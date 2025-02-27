@@ -143,10 +143,11 @@ map.setMinZoom(2); // Adjust min zoom level if needed
 map.setMaxBounds(map.options.maxBounds);
 
 
-       L.tileLayer('https://tiles.openaerialmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenAerialMap',
-    maxZoom: 22
-}).addTo(map);
+         // Set up high-resolution aerial tiles (Esri Satellite)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri',
+            maxZoom: 19
+        }).addTo(map);
 
         
         var currentMarker = null;
