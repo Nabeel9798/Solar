@@ -126,23 +126,19 @@
 
     <script>
         var map = L.map('map', {
-    center: [YOUR_LAT, YOUR_LNG], // Set your preferred center
-    zoom: 18, // Adjust default zoom level
-    maxZoom: 18, // Prevent excessive zooming out
-    minZoom: 2, // Prevent excessive zooming in
+    center: [YOUR_LAT, YOUR_LNG], 
+    zoom: 3,
+    maxZoom: 18,
+    minZoom: 2,
     maxBounds: [
-        [85, -180],  // Top-left corner
-        [-85, 180]   // Bottom-right corner
+        [85, -180],  
+        [-85, 180]   
     ],
-    maxBoundsViscosity: 1.0, // Keeps the map inside bounds
-    worldCopyJump: false // Prevents map repetition
+    maxBoundsViscosity: 1.0, 
+    worldCopyJump: false, 
+    wrapX: false // This may help prevent the wrapping issue
 });
 
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles © Esri',
-    noWrap: true,  // Prevents infinite map wrapping
-     maxZoom: 20
-}).addTo(map);
 
 
         var currentMarker = null;
