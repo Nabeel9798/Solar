@@ -3,6 +3,7 @@ import json
 from flask import Flask, jsonify, request
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from flask_cors import CORS  # Import CORS
 import time
 
 def find_nearest(lat, lon, data):
@@ -16,6 +17,7 @@ def find_nearest(lat, lon, data):
     return nearest
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Google Sheets Authentication using Environment Variable
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
