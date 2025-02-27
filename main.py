@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import time
+from math import sqrt
 
 app = Flask(__name__)
 
@@ -28,13 +29,28 @@ def load_data():
     data_dict = {}
 
     for row in records:
-        key = (str(row["Latitude"]), str(row["Longitude"]))
+        key = (float(row["Latitude"]), float(row["Longitude"]))
         data_dict[key] = row  # Store row as value
 
     return data_dict
 
 # Load data once (this will make lookups very fast)
 data_cache = load_data()
+
+def find_nearest(lat, lon):
+    """Finds the nearest latitude and longitude in the dataset."""
+    nearest_key = None
+    min_distance = float("inf")
+
+    for key in data_cache.keys():
+        key_lat, key_lon = key
+        distance = sqrt((lat - key_lat) ** 2 + (lon - key_lon) ** 2)
+
+        if distance < min_distance:
+            min_distance = distance
+            nearest_key = key
+
+    return nearest_key
 
 @app.route("/")
 def home():
@@ -44,20 +60,27 @@ def home():
 def get_data():
     start_time = time.time()
 
-    latitude = request.args.get("lat")
-    longitude = request.args.get("lon")
-
-    if not latitude or not longitude:
-        return jsonify({"error": "Missing lat/lon parameters"}), 400
+    try:
+        latitude = float(request.args.get("lat"))
+        longitude = float(request.args.get("lon"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid or missing lat/lon parameters"}), 400
 
     key = (latitude, longitude)
     result = data_cache.get(key, None)
 
-    if result:
-        result["execution_time"] = f"{time.time() - start_time:.4f} seconds"
-        return jsonify(result)
-    else:
-        return jsonify({"error": "Data not found", "execution_time": f"{time.time() - start_time:.4f} seconds"}), 404
+    if not result:
+        nearest_key = find_nearest(latitude, longitude)
+        if nearest_key:
+            result = data_cache[nearest_key]
+            result["nearest_lat"] = nearest_key[0]
+            result["nearest_lon"] = nearest_key[1]
+            result["message"] = "Exact data not found. Returning nearest coordinate."
+        else:
+            return jsonify({"error": "No nearby data found"}), 404
+
+    result["execution_time"] = f"{time.time() - start_time:.4f} seconds"
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)
