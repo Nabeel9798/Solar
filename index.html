@@ -141,7 +141,7 @@
         }).addTo(map);
 
         var currentMarker = null;
-        const API_URL = "https://solar-production-88e3.up.railway.app/get_solar_data";  // Update this URL when deployed
+        const API_URL = "https://solar-production-88e3.up.railway.app/get_data";  // Update this URL when deployed
 
         function fetchSolarData(lat, lon) {
             fetch(`${API_URL}?lat=${lat}&lon=${lon}`)
