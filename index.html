@@ -126,21 +126,20 @@
 
     <script>
         var map = L.map('map', {
-    center: [52.5200, 13.4050], 
-    zoom: 3,
-    maxZoom: 18,
-    minZoom: 2,
-    maxBounds: [
-        [85, -180],  
-        [-85, 180]   
-    ],
-    maxBoundsViscosity: 1.0, 
-    worldCopyJump: false, 
-    wrapX: false // This may help prevent the wrapping issue
-});
+            center: [52.5200, 13.4050], 
+            zoom: 10, 
+            maxZoom: 20,
+            zoomSnap: 0.25,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 100
+        });
 
-
-
+        // Set up high-resolution aerial tiles (Esri Satellite)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri',
+            maxZoom: 20
+        }).addTo(map);
+        
         var currentMarker = null;
         const API_URL = "https://solar-production-88e3.up.railway.app/get_data";  // Update this URL when deployed
 
