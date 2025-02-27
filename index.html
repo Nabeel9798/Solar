@@ -125,17 +125,21 @@
     </div>
 
     <script>
-       var map = L.map('map', {
-    center: [52.5200, 13.4050],
-    zoom: 3,
+      var map = L.map('map', {
+    center: [0, 0], // Center at the equator
+    zoom: 2, // Adjust zoom level as needed
     maxBounds: [
-        [85, -180],  // North-West limit
-        [-85, 180]   // South-East limit
+        [-85, -180], // Southwest corner
+        [85, 180]    // Northeast corner
     ],
-    maxBoundsViscosity: 1.0, 
-    worldCopyJump: false,  
-    wrapX: false   // Prevents longitude from wrapping beyond -180 to 180
+    maxBoundsViscosity: 1.0, // Prevents dragging beyond bounds
+    worldCopyJump: false,  // Prevents infinite world wrapping
+    zoomControl: true, // Enable zoom controls
 });
+
+// Disable map wrapping
+map.setMinZoom(2); // Adjust min zoom level if needed
+map.setMaxBounds(map.options.maxBounds);
 
 
         // Set up high-resolution aerial tiles (Esri Satellite)
