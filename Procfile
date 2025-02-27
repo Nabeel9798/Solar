@@ -1,1 +1,1 @@
-web: gunicorn -w 1 -b 0.0.0.0:8080 main:app
+web: uvicorn main:app --host 0.0.0.0 --port 8080
