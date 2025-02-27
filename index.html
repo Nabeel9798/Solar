@@ -126,17 +126,17 @@
 
     <script>
         var map = L.map('map', {
-    center: [52.5200, 13.4050], 
-    zoom: 10, 
-    maxZoom: 20,
-    zoomSnap: 0.25,
-    zoomDelta: 0.5,
-    wheelPxPerZoomLevel: 100,
-    worldCopyJump: false,  // Prevents wrapping
-    maxBounds: [[-85, -180], [85, 180]],  // Limits panning to valid lat/lon range
-    maxBoundsViscosity: 1.0,  // Keeps users within bounds
-            noWrap: true
+    center: [YOUR_LAT, YOUR_LNG], // Set to your preferred center
+    zoom: 10, // Adjust default zoom level
+    maxZoom: 18, // Prevent zooming out too much
+    minZoom: 2, // Prevent excessive zooming in
+    maxBounds: [
+        [85, -180],  // Top-left corner
+        [-85, 180]   // Bottom-right corner
+    ],
+    maxBoundsViscosity: 1.0 // Keeps the map inside bounds
 });
+
 
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles © Esri',
