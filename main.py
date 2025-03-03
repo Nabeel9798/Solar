@@ -3,7 +3,7 @@ import json
 from flask import Flask, jsonify, request
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 import time
 
 def find_nearest(lat, lon, data):
@@ -17,7 +17,7 @@ def find_nearest(lat, lon, data):
     return nearest
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
 # Google Sheets Authentication using Environment Variable
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -41,7 +41,7 @@ def load_data():
 
     for row in records:
         key = (str(row["Latitude"]), str(row["Longitude"]))
-        data_dict[key] = row  # Store row as value
+        data_dict[key] = row
 
     return data_dict
 
@@ -67,9 +67,15 @@ def get_data():
 
     if not result:
         result = find_nearest(latitude, longitude, data_cache)
-    
+
     result["execution_time"] = f"{time.time() - start_time:.4f} seconds"
     return jsonify(result)
+
+@app.route("/reload_data", methods=["POST"])  # Added reload endpoint
+def reload_data():
+    global data_cache
+    data_cache = load_data()
+    return jsonify({"message": "Data reloaded successfully"})
 
 if __name__ == "__main__":
     app.run(debug=True)
