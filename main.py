@@ -30,7 +30,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(google_creds, scope)
 client = gspread.authorize(creds)
 
 # Open Google Sheet
-SHEET_NAME = "Solardata_5"
+SHEET_NAME = "Solardata_2"
 sheet = client.open(SHEET_NAME).sheet1
 
 # Load the sheet into a dictionary for fast searching
